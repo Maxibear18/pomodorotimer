@@ -1,6 +1,17 @@
 .timer-container {
   text-align: center;
   font-family: Arial, sans-serif;
+  padding-top: 40px;
+  transition: all 0.3s ease;
+}
+
+.timer-container.running {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding-top: 0;
 }
 
 .mode-buttons {
@@ -30,8 +41,16 @@
 }
 
 .timer-display {
-  font-size: 4rem;
-  margin: 20px 0;
+  font-size: 3rem;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.control-buttons {
+  margin-top: 30px;
 }
 
 .control-buttons button {
@@ -48,4 +67,29 @@
   font-size: 0.85rem;
   color: #aaa;
   font-family: monospace;
+}
+
+/* Circular progress ring */
+.progress-ring {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.ring-svg {
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 10;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: #f87171;
+  stroke-width: 10;
+  transition: stroke-dashoffset 1s linear;
 }
