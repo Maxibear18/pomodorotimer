@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Timer.css";
 
 const Timer = () => {
-  const WORK_TIME = 0.5 * 60;
-  const SHORT_BREAK = 0.5 * 60;
-  const LONG_BREAK = 0.5 * 60;
+  const WORK_TIME = 25 * 60;
+  const SHORT_BREAK = 5 * 60;
+  const LONG_BREAK = 15 * 60;
 
   const [secondsLeft, setSecondsLeft] = useState(WORK_TIME);
   const [customTotalTime, setCustomTotalTime] = useState(0);
@@ -222,7 +222,7 @@ const Timer = () => {
       </div>
 
       <audio ref={alarmRef} src="/alarm.mp3" />
-      <div className="version-label">v1.4</div>
+      <div className="version-label">v1.3</div>
     </div>
   );
 };
