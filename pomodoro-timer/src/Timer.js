@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import "./Timer.css"; 
 
 const Timer = () => {
   const WORK_TIME = 25 * 60;
@@ -32,18 +33,25 @@ const Timer = () => {
     if (!isRunning) setIsRunning(true);
   };
 
-  const switchMode = (mode) => {
-    clearInterval(intervalRef.current);
+  const pauseTimer = () => {
     setIsRunning(false);
-    setActiveMode(mode);
+    clearInterval(intervalRef.current);
+  };
 
-    if (mode === "work") {
-      setSecondsLeft(WORK_TIME);
-    } else if (mode === "short") {
-      setSecondsLeft(SHORT_BREAK);
-    } else if (mode === "long") {
-      setSecondsLeft(LONG_BREAK);
-    }
+  const stopTimer = () => {
+    setIsRunning(false);
+    clearInterval(intervalRef.current);
+    if (activeMode === "work") setSecondsLeft(WORK_TIME);
+    if (activeMode === "short") setSecondsLeft(SHORT_BREAK);
+    if (activeMode === "long") setSecondsLeft(LONG_BREAK);
+  };
+
+  const switchMode = (mode) => {
+    if (isRunning) return; 
+    setActiveMode(mode);
+    if (mode === "work") setSecondsLeft(WORK_TIME);
+    else if (mode === "short") setSecondsLeft(SHORT_BREAK);
+    else if (mode === "long") setSecondsLeft(LONG_BREAK);
   };
 
   const formatTime = (secs) => {
@@ -53,31 +61,28 @@ const Timer = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", fontFamily: "Arial" }}>
+    <div className="timer-container">
       <h1>🍅 Pomodoro Timer 🍅</h1>
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => switchMode("work")} style={getModeStyle(activeMode === "work")}>Work</button>
-        <button onClick={() => switchMode("short")} style={getModeStyle(activeMode === "short")}>Short Break</button>
-        <button onClick={() => switchMode("long")} style={getModeStyle(activeMode === "long")}>Long Break</button>
+      <div className="mode-buttons">
+        <button onClick={() => switchMode("work")} disabled={isRunning} className={activeMode === "work" ? "active" : ""}>Work</button>
+        <button onClick={() => switchMode("short")} disabled={isRunning} className={activeMode === "short" ? "active" : ""}>Short Break</button>
+        <button onClick={() => switchMode("long")} disabled={isRunning} className={activeMode === "long" ? "active" : ""}>Long Break</button>
       </div>
-      <h2 style={{ fontSize: "4rem" }}>{formatTime(secondsLeft)}</h2>
-      <button onClick={startTimer} style={{ padding: "10px 20px", fontSize: "1.2rem" }}>
-        Start
-      </button>
+      <h2 className="timer-display">{formatTime(secondsLeft)}</h2>
+      <div className="control-buttons">
+        {!isRunning ? (
+          <button onClick={startTimer}>Start</button>
+        ) : (
+          <>
+            <button onClick={pauseTimer}>Pause</button>
+            <button onClick={stopTimer}>Stop</button>
+          </>
+        )}
+      </div>
       <audio ref={alarmRef} src="/alarm.mp3" />
+      <div className="version-label">v1.0</div>
     </div>
   );
 };
-
-const getModeStyle = (isActive) => ({
-  padding: "10px 15px",
-  margin: "0 5px",
-  fontSize: "1rem",
-  backgroundColor: isActive ? "#f87171" : "#d1d5db",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  color: isActive ? "white" : "black",
-});
 
 export default Timer;
