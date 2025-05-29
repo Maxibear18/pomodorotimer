@@ -32,6 +32,11 @@
   background-color: #f87171; 
 }
 
+/* Round all buttons */
+button {
+  border-radius: 999px;
+}
+
 .mode-buttons {
   margin-bottom: 20px;
 }
@@ -42,7 +47,7 @@
   font-size: 1rem;
   background-color: #d1d5db;
   border: none;
-  border-radius: 5px;
+  border-radius: 999px;
   cursor: pointer;
   color: black;
   transition: background-color 0.3s ease;
@@ -113,6 +118,8 @@
   font-size: 1.2rem;
   margin: 0 10px;
   cursor: pointer;
+  border-radius: 999px;
+  border: none;
 }
 
 .version-label {
