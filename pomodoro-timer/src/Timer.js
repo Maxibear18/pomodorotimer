@@ -39,7 +39,14 @@ const Timer = () => {
             clearInterval(intervalRef.current);
             setIsRunning(false);
             setIsFinished(true);
-            if (alarmRef.current && !isMuted) alarmRef.current.play(); // ✅ Use mute
+           if (alarmRef.current && !isMuted) {
+              alarmRef.current.currentTime = 0;
+              alarmRef.current.play();
+              setTimeout(() => {
+                alarmRef.current.pause();
+                alarmRef.current.currentTime = 0;
+              }, 3000); 
+            } 
             return 0;
           }
           return prev - 1;
