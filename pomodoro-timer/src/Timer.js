@@ -49,6 +49,32 @@ const Timer = () => {
     return () => clearInterval(intervalRef.current);
   }, [isRunning, isPaused]);
 
+  useEffect(() => {
+    let bubbleInterval;
+
+    if (isRunning && !isPaused) {
+      bubbleInterval = setInterval(() => {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+
+        const size = Math.random() * 15 + 5; 
+        const duration = Math.random() * 5 + 7; 
+
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.setProperty('--size', `${size}px`);
+        bubble.style.setProperty('--duration', `${duration}s`);
+
+        document.body.appendChild(bubble);
+
+        setTimeout(() => {
+          bubble.remove();
+        }, duration * 1000);
+      }, 400);
+    }
+
+    return () => clearInterval(bubbleInterval);
+  }, [isRunning, isPaused]);
+
   const startTimer = () => {
     if (activeMode === "custom" && !customTimeSet) {
       const mins = parseInt(customMinutes) || 0;
@@ -222,7 +248,7 @@ const Timer = () => {
       </div>
 
       <audio ref={alarmRef} src="/alarm.mp3" />
-      <div className="version-label">v1.3</div>
+      <div className="version-label">v1.4</div>
     </div>
   );
 };

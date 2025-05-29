@@ -36,7 +36,6 @@
   background-color: #f87171;
 }
 
-/* Round all buttons */
 button {
   border-radius: 999px;
 }
@@ -166,3 +165,27 @@ button {
   color: #aaa;
   font-family: monospace;
 }
+
+.bubble {
+  position: fixed;
+  bottom: -20px;
+  width: var(--size);
+  height: var(--size);
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: floatUp var(--duration) linear forwards;
+  z-index: 0;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-120vh);
+    opacity: 0;
+  }
+}
+
