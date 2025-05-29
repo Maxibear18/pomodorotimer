@@ -79,31 +79,45 @@ const Timer = () => {
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
-  const getStrokeColor = () => {
-    if (activeMode === "work") return "#ffb74d";
-    if (activeMode === "short") return "#42a5f5";
-    if (activeMode === "long") return "#66bb6a";
+  const getProgressColor = () => {
+    if (activeMode === "work") return "#ffa726";
+    if (activeMode === "short") return "#1e88e5";
+    if (activeMode === "long") return "#43a047";
     return "#f87171";
   };
 
   return (
     <div
       className={`timer-container ${isRunning || isPaused ? "active-layout" : ""} ${
-        (isRunning || isPaused) && activeMode === "work" ? "work-active" : ""
-      } ${(isRunning || isPaused) && activeMode === "short" ? "short-active" : ""}
-        ${(isRunning || isPaused) && activeMode === "long" ? "long-active" : ""}`}
+        (isRunning || isPaused) && activeMode === "work"
+          ? "work-active"
+          : (isRunning || isPaused) && activeMode === "short"
+          ? "short-active"
+          : (isRunning || isPaused) && activeMode === "long"
+          ? "long-active"
+          : ""
+      }`}
     >
       {!isRunning && !isPaused && <h1>🍅 Pomodoro Timer 🍅</h1>}
 
       {!isRunning && !isPaused && (
         <div className="mode-buttons">
-          <button onClick={() => switchMode("work")} className={activeMode === "work" ? "active" : ""}>
+          <button
+            onClick={() => switchMode("work")}
+            className={`work ${activeMode === "work" ? "active work" : ""}`}
+          >
             Work
           </button>
-          <button onClick={() => switchMode("short")} className={activeMode === "short" ? "active" : ""}>
+          <button
+            onClick={() => switchMode("short")}
+            className={`short ${activeMode === "short" ? "active short" : ""}`}
+          >
             Short Break
           </button>
-          <button onClick={() => switchMode("long")} className={activeMode === "long" ? "active" : ""}>
+          <button
+            onClick={() => switchMode("long")}
+            className={`long ${activeMode === "long" ? "active long" : ""}`}
+          >
             Long Break
           </button>
         </div>
@@ -118,7 +132,7 @@ const Timer = () => {
             cx="140"
             cy="140"
             style={{
-              stroke: getStrokeColor(),
+              stroke: getProgressColor(),
               strokeDasharray: `${2 * Math.PI * 120}`,
               strokeDashoffset: `${2 * Math.PI * 120 * (1 - percentage / 100)}`
             }}
@@ -129,14 +143,12 @@ const Timer = () => {
 
       <div className="control-buttons">
         {!isRunning && !isPaused && <button onClick={startTimer}>Start</button>}
-
         {isRunning && !isPaused && (
           <>
             <button onClick={pauseTimer}>Pause</button>
             <button onClick={stopTimer}>Stop</button>
           </>
         )}
-
         {isPaused && (
           <>
             <button onClick={resumeTimer}>Resume</button>

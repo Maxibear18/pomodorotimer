@@ -17,15 +17,15 @@
 }
 
 .timer-container.work-active {
-  background-color: #ffb74d;
+  background-color: #ffa726; /* slightly darker orange */
 }
 
 .timer-container.short-active {
-  background-color: #42a5f5;
+  background-color: #1e88e5; /* darker blue */
 }
 
 .timer-container.long-active {
-  background-color: #66bb6a;
+  background-color: #43a047; /* darker green */
 }
 
 .mode-buttons {
@@ -44,8 +44,19 @@
   transition: background-color 0.3s ease;
 }
 
-.mode-buttons button.active {
-  background-color: #f87171;
+/* Per-mode active button colors */
+.mode-buttons button.active.work {
+  background-color: #ffa726;
+  color: white;
+}
+
+.mode-buttons button.active.short {
+  background-color: #1e88e5;
+  color: white;
+}
+
+.mode-buttons button.active.long {
+  background-color: #43a047;
   color: white;
 }
 
