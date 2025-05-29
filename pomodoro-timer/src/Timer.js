@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Timer.css";
 
 const Timer = () => {
-  const WORK_TIME = 25 * 60;
-  const SHORT_BREAK = 5 * 60;
-  const LONG_BREAK = 15 * 60;
+  const WORK_TIME = .5 * 60;
+  const SHORT_BREAK = .5 * 60;
+  const LONG_BREAK = .5 * 60;
 
   const [secondsLeft, setSecondsLeft] = useState(WORK_TIME);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [activeMode, setActiveMode] = useState("work");
   const intervalRef = useRef(null);
   const alarmRef = useRef(null);
@@ -29,6 +30,7 @@ const Timer = () => {
           if (prev <= 1) {
             clearInterval(intervalRef.current);
             setIsRunning(false);
+            setIsFinished(true);
             if (alarmRef.current) alarmRef.current.play();
             return 0;
           }
@@ -44,6 +46,7 @@ const Timer = () => {
     if (!isRunning) {
       setIsRunning(true);
       setIsPaused(false);
+      setIsFinished(false);
     }
   };
 
@@ -59,6 +62,7 @@ const Timer = () => {
   const stopTimer = () => {
     setIsRunning(false);
     setIsPaused(false);
+    setIsFinished(false);
     clearInterval(intervalRef.current);
     if (activeMode === "work") setSecondsLeft(WORK_TIME);
     if (activeMode === "short") setSecondsLeft(SHORT_BREAK);
@@ -68,6 +72,7 @@ const Timer = () => {
   const switchMode = (mode) => {
     if (isRunning) return;
     setActiveMode(mode);
+    setIsFinished(false);
     if (mode === "work") setSecondsLeft(WORK_TIME);
     else if (mode === "short") setSecondsLeft(SHORT_BREAK);
     else if (mode === "long") setSecondsLeft(LONG_BREAK);
@@ -80,23 +85,21 @@ const Timer = () => {
   };
 
   const getProgressColor = () => {
+    if (isFinished) return "#f87171";
     if (activeMode === "work") return "#ffa726";
     if (activeMode === "short") return "#1e88e5";
     if (activeMode === "long") return "#43a047";
-    return "#f87171";
   };
 
   return (
     <div
-      className={`timer-container ${isRunning || isPaused ? "active-layout" : ""} ${
-        (isRunning || isPaused) && activeMode === "work"
-          ? "work-active"
-          : (isRunning || isPaused) && activeMode === "short"
-          ? "short-active"
-          : (isRunning || isPaused) && activeMode === "long"
-          ? "long-active"
-          : ""
-      }`}
+      className={`timer-container 
+        ${isRunning || isPaused ? "active-layout" : ""} 
+        ${isFinished ? "finished" : ""}
+        ${!isFinished && activeMode === "work" && (isRunning || isPaused) ? "work-active" : ""}
+        ${!isFinished && activeMode === "short" && (isRunning || isPaused) ? "short-active" : ""}
+        ${!isFinished && activeMode === "long" && (isRunning || isPaused) ? "long-active" : ""}
+      `}
     >
       {!isRunning && !isPaused && <h1>🍅 Pomodoro Timer 🍅</h1>}
 
@@ -127,7 +130,7 @@ const Timer = () => {
         <svg className="ring-svg" width="280" height="280">
           <circle className="ring-bg" r="120" cx="140" cy="140" />
           <circle
-            className="ring-progress"
+            className={`ring-progress ${isFinished ? "finished" : ""}`}
             r="120"
             cx="140"
             cy="140"

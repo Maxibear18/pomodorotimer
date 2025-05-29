@@ -17,15 +17,19 @@
 }
 
 .timer-container.work-active {
-  background-color: #ffa726; /* slightly darker orange */
+  background-color: #ffa726;
 }
 
 .timer-container.short-active {
-  background-color: #1e88e5; /* darker blue */
+  background-color: #1e88e5;
 }
 
 .timer-container.long-active {
-  background-color: #43a047; /* darker green */
+  background-color: #43a047;
+}
+
+.timer-container.finished {
+  background-color: #f87171; 
 }
 
 .mode-buttons {
@@ -44,7 +48,6 @@
   transition: background-color 0.3s ease;
 }
 
-/* Per-mode active button colors */
 .mode-buttons button.active.work {
   background-color: #ffa726;
   color: white;
@@ -85,7 +88,11 @@
 .ring-progress {
   fill: none;
   stroke-width: 14;
-  transition: stroke-dashoffset 1s linear;
+  transition: stroke 1.5s ease-in-out, stroke-dashoffset 1s linear;
+}
+
+.ring-progress.finished {
+  stroke: #f87171;
 }
 
 .timer-display {
