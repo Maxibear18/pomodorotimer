@@ -40,6 +40,30 @@
   cursor: not-allowed;
 }
 
+.progress-ring {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+}
+
+.ring-svg {
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 14;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: #f87171;
+  stroke-width: 14;
+  transition: stroke-dashoffset 1s linear;
+}
+
 .timer-display {
   font-size: 3rem;
   margin: 0;
@@ -67,29 +91,4 @@
   font-size: 0.85rem;
   color: #aaa;
   font-family: monospace;
-}
-
-/* Circular progress ring */
-.progress-ring {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-}
-
-.ring-svg {
-  transform: rotate(-90deg);
-}
-
-.ring-bg {
-  fill: none;
-  stroke: #eee;
-  stroke-width: 10;
-}
-
-.ring-progress {
-  fill: none;
-  stroke: #f87171;
-  stroke-width: 10;
-  transition: stroke-dashoffset 1s linear;
 }
