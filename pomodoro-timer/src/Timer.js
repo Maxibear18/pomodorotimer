@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Timer.css";
 
 const Timer = () => {
-  const WORK_TIME = .5 * 60;
-  const SHORT_BREAK = .5 * 60;
-  const LONG_BREAK = .5 * 60;
+  const WORK_TIME = 0.5 * 60;
+  const SHORT_BREAK = 0.5 * 60;
+  const LONG_BREAK = 0.5 * 60;
 
   const [secondsLeft, setSecondsLeft] = useState(WORK_TIME);
   const [isRunning, setIsRunning] = useState(false);
@@ -64,9 +64,21 @@ const Timer = () => {
     setIsPaused(false);
     setIsFinished(false);
     clearInterval(intervalRef.current);
+    resetSeconds();
+  };
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setIsFinished(false);
+    clearInterval(intervalRef.current);
+    resetSeconds();
+  };
+
+  const resetSeconds = () => {
     if (activeMode === "work") setSecondsLeft(WORK_TIME);
-    if (activeMode === "short") setSecondsLeft(SHORT_BREAK);
-    if (activeMode === "long") setSecondsLeft(LONG_BREAK);
+    else if (activeMode === "short") setSecondsLeft(SHORT_BREAK);
+    else if (activeMode === "long") setSecondsLeft(LONG_BREAK);
   };
 
   const switchMode = (mode) => {
@@ -94,16 +106,16 @@ const Timer = () => {
   return (
     <div
       className={`timer-container 
-        ${isRunning || isPaused ? "active-layout" : ""} 
+        ${(isRunning || isPaused || isFinished) ? "active-layout" : ""} 
         ${isFinished ? "finished" : ""}
         ${!isFinished && activeMode === "work" && (isRunning || isPaused) ? "work-active" : ""}
         ${!isFinished && activeMode === "short" && (isRunning || isPaused) ? "short-active" : ""}
         ${!isFinished && activeMode === "long" && (isRunning || isPaused) ? "long-active" : ""}
       `}
     >
-      {!isRunning && !isPaused && <h1>🍅 Pomodoro Timer 🍅</h1>}
+      {!isRunning && !isPaused && !isFinished && <h1>🍅 Pomodoro Timer 🍅</h1>}
 
-      {!isRunning && !isPaused && (
+      {!isRunning && !isPaused && !isFinished && (
         <div className="mode-buttons">
           <button
             onClick={() => switchMode("work")}
@@ -145,7 +157,9 @@ const Timer = () => {
       </div>
 
       <div className="control-buttons">
-        {!isRunning && !isPaused && <button onClick={startTimer}>Start</button>}
+        {!isRunning && !isPaused && !isFinished && (
+          <button onClick={startTimer}>Start</button>
+        )}
         {isRunning && !isPaused && (
           <>
             <button onClick={pauseTimer}>Pause</button>
@@ -157,6 +171,9 @@ const Timer = () => {
             <button onClick={resumeTimer}>Resume</button>
             <button onClick={stopTimer}>Stop</button>
           </>
+        )}
+        {isFinished && (
+          <button onClick={resetTimer}>Reset</button>
         )}
       </div>
 
