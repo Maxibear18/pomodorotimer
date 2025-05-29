@@ -7,10 +7,15 @@ const Timer = () => {
   const LONG_BREAK = 0.5 * 60;
 
   const [secondsLeft, setSecondsLeft] = useState(WORK_TIME);
+  const [customTotalTime, setCustomTotalTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [activeMode, setActiveMode] = useState("work");
+  const [customMinutes, setCustomMinutes] = useState("");
+  const [customSeconds, setCustomSeconds] = useState("");
+  const [customTimeSet, setCustomTimeSet] = useState(false);
+
   const intervalRef = useRef(null);
   const alarmRef = useRef(null);
 
@@ -19,9 +24,11 @@ const Timer = () => {
       ? WORK_TIME
       : activeMode === "short"
       ? SHORT_BREAK
-      : LONG_BREAK;
+      : activeMode === "long"
+      ? LONG_BREAK
+      : customTotalTime || secondsLeft;
 
-  const percentage = ((totalTime - secondsLeft) / totalTime) * 100;
+  const percentage = totalTime > 0 ? ((totalTime - secondsLeft) / totalTime) * 100 : 0;
 
   useEffect(() => {
     if (isRunning && !isPaused) {
@@ -43,11 +50,18 @@ const Timer = () => {
   }, [isRunning, isPaused]);
 
   const startTimer = () => {
-    if (!isRunning) {
-      setIsRunning(true);
-      setIsPaused(false);
-      setIsFinished(false);
+    if (activeMode === "custom" && !customTimeSet) {
+      const mins = parseInt(customMinutes) || 0;
+      const secs = parseInt(customSeconds) || 0;
+      const totalSecs = mins * 60 + secs;
+      if (totalSecs <= 0) return;
+      setSecondsLeft(totalSecs);
+      setCustomTotalTime(totalSecs);
+      setCustomTimeSet(true);
     }
+    setIsRunning(true);
+    setIsPaused(false);
+    setIsFinished(false);
   };
 
   const pauseTimer = () => {
@@ -64,30 +78,51 @@ const Timer = () => {
     setIsPaused(false);
     setIsFinished(false);
     clearInterval(intervalRef.current);
-    resetSeconds();
+    resetSeconds(true);
   };
 
   const resetTimer = () => {
     setIsRunning(false);
     setIsPaused(false);
     setIsFinished(false);
+    setCustomTimeSet(false);
+    setCustomMinutes("");
+    setCustomSeconds("");
+    setCustomTotalTime(0);
     clearInterval(intervalRef.current);
-    resetSeconds();
+    resetSeconds(true);
   };
 
-  const resetSeconds = () => {
-    if (activeMode === "work") setSecondsLeft(WORK_TIME);
-    else if (activeMode === "short") setSecondsLeft(SHORT_BREAK);
-    else if (activeMode === "long") setSecondsLeft(LONG_BREAK);
+  const resetSeconds = (isStop = false) => {
+    if (activeMode === "work") {
+      setSecondsLeft(WORK_TIME);
+    } else if (activeMode === "short") {
+      setSecondsLeft(SHORT_BREAK);
+    } else if (activeMode === "long") {
+      setSecondsLeft(LONG_BREAK);
+    } else if (activeMode === "custom") {
+      if (isStop) {
+        setSecondsLeft(customTotalTime);
+      } else {
+        setCustomMinutes("");
+        setCustomSeconds("");
+        setCustomTotalTime(0);
+        setCustomTimeSet(false);
+        setSecondsLeft(0);
+      }
+    }
   };
 
   const switchMode = (mode) => {
     if (isRunning) return;
     setActiveMode(mode);
     setIsFinished(false);
+    setCustomTimeSet(false);
+    setCustomTotalTime(0);
     if (mode === "work") setSecondsLeft(WORK_TIME);
     else if (mode === "short") setSecondsLeft(SHORT_BREAK);
     else if (mode === "long") setSecondsLeft(LONG_BREAK);
+    else if (mode === "custom") setSecondsLeft(0);
   };
 
   const formatTime = (secs) => {
@@ -101,6 +136,7 @@ const Timer = () => {
     if (activeMode === "work") return "#ffa726";
     if (activeMode === "short") return "#1e88e5";
     if (activeMode === "long") return "#43a047";
+    if (activeMode === "custom") return "#9575cd";
   };
 
   return (
@@ -111,30 +147,17 @@ const Timer = () => {
         ${!isFinished && activeMode === "work" && (isRunning || isPaused) ? "work-active" : ""}
         ${!isFinished && activeMode === "short" && (isRunning || isPaused) ? "short-active" : ""}
         ${!isFinished && activeMode === "long" && (isRunning || isPaused) ? "long-active" : ""}
+        ${!isFinished && activeMode === "custom" && (isRunning || isPaused) ? "custom-active" : ""}
       `}
     >
       {!isRunning && !isPaused && !isFinished && <h1>🍅 Pomodoro Timer 🍅</h1>}
 
       {!isRunning && !isPaused && !isFinished && (
         <div className="mode-buttons">
-          <button
-            onClick={() => switchMode("work")}
-            className={`work ${activeMode === "work" ? "active work" : ""}`}
-          >
-            Work
-          </button>
-          <button
-            onClick={() => switchMode("short")}
-            className={`short ${activeMode === "short" ? "active short" : ""}`}
-          >
-            Short Break
-          </button>
-          <button
-            onClick={() => switchMode("long")}
-            className={`long ${activeMode === "long" ? "active long" : ""}`}
-          >
-            Long Break
-          </button>
+          <button onClick={() => switchMode("work")} className={`work ${activeMode === "work" ? "active work" : ""}`}>Work</button>
+          <button onClick={() => switchMode("short")} className={`short ${activeMode === "short" ? "active short" : ""}`}>Short Break</button>
+          <button onClick={() => switchMode("long")} className={`long ${activeMode === "long" ? "active long" : ""}`}>Long Break</button>
+          <button onClick={() => switchMode("custom")} className={`custom ${activeMode === "custom" ? "active custom" : ""}`}>Custom</button>
         </div>
       )}
 
@@ -153,7 +176,28 @@ const Timer = () => {
             }}
           />
         </svg>
-        <h2 className="timer-display">{formatTime(secondsLeft)}</h2>
+
+        {activeMode === "custom" && !customTimeSet ? (
+          <div className="custom-inputs">
+            <input
+              type="number"
+              min="0"
+              placeholder="Minutes"
+              value={customMinutes}
+              onChange={(e) => setCustomMinutes(e.target.value)}
+            />
+            <input
+              type="number"
+              min="0"
+              max="59"
+              placeholder="Seconds"
+              value={customSeconds}
+              onChange={(e) => setCustomSeconds(e.target.value)}
+            />
+          </div>
+        ) : (
+          <div className="timer-display">{formatTime(secondsLeft)}</div>
+        )}
       </div>
 
       <div className="control-buttons">
@@ -178,7 +222,7 @@ const Timer = () => {
       </div>
 
       <audio ref={alarmRef} src="/alarm.mp3" />
-      <div className="version-label">v1.2</div>
+      <div className="version-label">v1.4</div>
     </div>
   );
 };
