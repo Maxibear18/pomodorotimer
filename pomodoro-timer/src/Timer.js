@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./Timer.css"; 
+import "./Timer.css";
 
 const Timer = () => {
   const WORK_TIME = 25 * 60;
@@ -8,12 +8,22 @@ const Timer = () => {
 
   const [secondsLeft, setSecondsLeft] = useState(WORK_TIME);
   const [isRunning, setIsRunning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [activeMode, setActiveMode] = useState("work");
   const intervalRef = useRef(null);
   const alarmRef = useRef(null);
 
+  const totalTime =
+    activeMode === "work"
+      ? WORK_TIME
+      : activeMode === "short"
+      ? SHORT_BREAK
+      : LONG_BREAK;
+
+  const percentage = ((totalTime - secondsLeft) / totalTime) * 100;
+
   useEffect(() => {
-    if (isRunning) {
+    if (isRunning && !isPaused) {
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
@@ -26,20 +36,29 @@ const Timer = () => {
         });
       }, 1000);
     }
+
     return () => clearInterval(intervalRef.current);
-  }, [isRunning]);
+  }, [isRunning, isPaused]);
 
   const startTimer = () => {
-    if (!isRunning) setIsRunning(true);
+    if (!isRunning) {
+      setIsRunning(true);
+      setIsPaused(false);
+    }
   };
 
   const pauseTimer = () => {
-    setIsRunning(false);
+    setIsPaused(true);
     clearInterval(intervalRef.current);
+  };
+
+  const resumeTimer = () => {
+    setIsPaused(false);
   };
 
   const stopTimer = () => {
     setIsRunning(false);
+    setIsPaused(false);
     clearInterval(intervalRef.current);
     if (activeMode === "work") setSecondsLeft(WORK_TIME);
     if (activeMode === "short") setSecondsLeft(SHORT_BREAK);
@@ -47,7 +66,7 @@ const Timer = () => {
   };
 
   const switchMode = (mode) => {
-    if (isRunning) return; 
+    if (isRunning) return;
     setActiveMode(mode);
     if (mode === "work") setSecondsLeft(WORK_TIME);
     else if (mode === "short") setSecondsLeft(SHORT_BREAK);
@@ -61,24 +80,53 @@ const Timer = () => {
   };
 
   return (
-    <div className="timer-container">
-      <h1>🍅 Pomodoro Timer 🍅</h1>
-      <div className="mode-buttons">
-        <button onClick={() => switchMode("work")} disabled={isRunning} className={activeMode === "work" ? "active" : ""}>Work</button>
-        <button onClick={() => switchMode("short")} disabled={isRunning} className={activeMode === "short" ? "active" : ""}>Short Break</button>
-        <button onClick={() => switchMode("long")} disabled={isRunning} className={activeMode === "long" ? "active" : ""}>Long Break</button>
+    <div className={`timer-container ${isRunning || isPaused ? "running" : ""}`}>
+      {!isRunning && !isPaused && <h1>🍅 Pomodoro Timer 🍅</h1>}
+
+      {!isRunning && !isPaused && (
+        <div className="mode-buttons">
+          <button onClick={() => switchMode("work")} className={activeMode === "work" ? "active" : ""}>Work</button>
+          <button onClick={() => switchMode("short")} className={activeMode === "short" ? "active" : ""}>Short Break</button>
+          <button onClick={() => switchMode("long")} className={activeMode === "long" ? "active" : ""}>Long Break</button>
+        </div>
+      )}
+
+      <div className="progress-ring">
+        <svg className="ring-svg" width="280" height="280">
+          <circle className="ring-bg" r="120" cx="140" cy="140" />
+          <circle
+            className="ring-progress"
+            r="120"
+            cx="140" cy="140"
+            style={{
+              strokeDasharray: `${2 * Math.PI * 120}`,
+              strokeDashoffset: `${2 * Math.PI * 120 * (1 - percentage / 100)}`
+            }}
+          />
+        </svg>
+        <h2 className="timer-display">{formatTime(secondsLeft)}</h2>
       </div>
-      <h2 className="timer-display">{formatTime(secondsLeft)}</h2>
+
       <div className="control-buttons">
-        {!isRunning ? (
+        {!isRunning && !isPaused && (
           <button onClick={startTimer}>Start</button>
-        ) : (
+        )}
+
+        {isRunning && !isPaused && (
           <>
             <button onClick={pauseTimer}>Pause</button>
             <button onClick={stopTimer}>Stop</button>
           </>
         )}
+
+        {isPaused && (
+          <>
+            <button onClick={resumeTimer}>Resume</button>
+            <button onClick={stopTimer}>Stop</button>
+          </>
+        )}
       </div>
+
       <audio ref={alarmRef} src="/alarm.mp3" />
       <div className="version-label">v1.0</div>
     </div>
