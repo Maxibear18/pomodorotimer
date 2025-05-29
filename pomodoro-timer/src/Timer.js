@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const Timer = () => {
-  const [secondsLeft, setSecondsLeft] = useState(1 * 60);
+  const [secondsLeft, setSecondsLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef(null);
+  const alarmRef = useRef(null); 
 
   useEffect(() => {
     if (isRunning) {
@@ -12,6 +13,9 @@ const Timer = () => {
           if (prev <= 1) {
             clearInterval(intervalRef.current);
             setIsRunning(false);
+            if (alarmRef.current) {
+              alarmRef.current.play(); 
+            }
             return 0;
           }
           return prev - 1;
@@ -36,11 +40,13 @@ const Timer = () => {
 
   return (
     <div style={{ textAlign: "center", fontFamily: "Arial" }}>
-      <h1>🍅 Pomodoro Timer 🍅</h1>
+      <h1>🍅 Pomodoro Timer 🍅 </h1>
       <h2 style={{ fontSize: "4rem" }}>{formatTime(secondsLeft)}</h2>
       <button onClick={startTimer} style={{ padding: "10px 20px", fontSize: "1.2rem" }}>
         Start
       </button>
+      {/* Hidden audio element */}
+      <audio ref={alarmRef} src="/alarm.mp3" />
     </div>
   );
 };
