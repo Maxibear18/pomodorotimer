@@ -1,17 +1,40 @@
 .timer-container {
   text-align: center;
   font-family: Arial, sans-serif;
-  padding-top: 40px;
-  transition: all 0.3s ease;
-}
-
-.timer-container.running {
+  background-color: white;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
+  padding-top: 40px;
+  transition: background-color 1.5s ease-in-out;
+}
+
+.timer-container.active-layout {
   justify-content: center;
-  height: 100vh;
   padding-top: 0;
+}
+
+.timer-container.work-active {
+  background-color: #ffa726;
+}
+
+.timer-container.short-active {
+  background-color: #1e88e5;
+}
+
+.timer-container.long-active {
+  background-color: #43a047;
+}
+
+.timer-container.finished {
+  background-color: #f87171; 
+}
+
+/* Round all buttons */
+button {
+  border-radius: 999px;
 }
 
 .mode-buttons {
@@ -24,14 +47,24 @@
   font-size: 1rem;
   background-color: #d1d5db;
   border: none;
-  border-radius: 5px;
+  border-radius: 999px;
   cursor: pointer;
   color: black;
   transition: background-color 0.3s ease;
 }
 
-.mode-buttons button.active {
-  background-color: #f87171;
+.mode-buttons button.active.work {
+  background-color: #ffa726;
+  color: white;
+}
+
+.mode-buttons button.active.short {
+  background-color: #1e88e5;
+  color: white;
+}
+
+.mode-buttons button.active.long {
+  background-color: #43a047;
   color: white;
 }
 
@@ -59,9 +92,12 @@
 
 .ring-progress {
   fill: none;
-  stroke: #f87171;
   stroke-width: 14;
-  transition: stroke-dashoffset 1s linear;
+  transition: stroke 1.5s ease-in-out, stroke-dashoffset 1s linear;
+}
+
+.ring-progress.finished {
+  stroke: #f87171;
 }
 
 .timer-display {
@@ -82,6 +118,8 @@
   font-size: 1.2rem;
   margin: 0 10px;
   cursor: pointer;
+  border-radius: 999px;
+  border: none;
 }
 
 .version-label {
