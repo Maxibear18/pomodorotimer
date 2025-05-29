@@ -11,15 +11,17 @@
   transition: background-color 1.5s ease-in-out;
 }
 
-/* Active timer layout overrides alignment for center effect */
 .timer-container.active-layout {
   justify-content: center;
   padding-top: 0;
 }
 
-/* Darker soft orange */
 .timer-container.work-active {
   background-color: #ffb74d;
+}
+
+.timer-container.short-active {
+  background-color:  #b3e5fc;
 }
 
 .mode-buttons {
