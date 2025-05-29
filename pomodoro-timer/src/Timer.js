@@ -108,7 +108,7 @@ const Timer = () => {
                 activeMode === "work"
                   ? "#ffb74d"
                   : activeMode === "short"
-                  ? "#81d4fa"
+                  ? "#b3e5fc"
                   : "#f87171",
               strokeDasharray: `${2 * Math.PI * 120}`,
               strokeDashoffset: `${2 * Math.PI * 120 * (1 - percentage / 100)}`
