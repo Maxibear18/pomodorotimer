@@ -15,6 +15,7 @@ const Timer = () => {
   const [customMinutes, setCustomMinutes] = useState("");
   const [customSeconds, setCustomSeconds] = useState("");
   const [customTimeSet, setCustomTimeSet] = useState(false);
+  const [isMuted, setIsMuted] = useState(false); // ✅ NEW STATE
 
   const intervalRef = useRef(null);
   const alarmRef = useRef(null);
@@ -38,7 +39,7 @@ const Timer = () => {
             clearInterval(intervalRef.current);
             setIsRunning(false);
             setIsFinished(true);
-            if (alarmRef.current) alarmRef.current.play();
+            if (alarmRef.current && !isMuted) alarmRef.current.play(); // ✅ Use mute
             return 0;
           }
           return prev - 1;
@@ -47,7 +48,7 @@ const Timer = () => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [isRunning, isPaused]);
+  }, [isRunning, isPaused, isMuted]);
 
   useEffect(() => {
     let bubbleInterval;
@@ -57,12 +58,12 @@ const Timer = () => {
         const bubble = document.createElement("div");
         bubble.className = "bubble";
 
-        const size = Math.random() * 15 + 5; 
-        const duration = Math.random() * 5 + 7; 
+        const size = Math.random() * 15 + 5;
+        const duration = Math.random() * 5 + 7;
 
         bubble.style.left = `${Math.random() * 100}%`;
-        bubble.style.setProperty('--size', `${size}px`);
-        bubble.style.setProperty('--duration', `${duration}s`);
+        bubble.style.setProperty("--size", `${size}px`);
+        bubble.style.setProperty("--duration", `${duration}s`);
 
         document.body.appendChild(bubble);
 
@@ -120,16 +121,12 @@ const Timer = () => {
   };
 
   const resetSeconds = (isStop = false) => {
-    if (activeMode === "work") {
-      setSecondsLeft(WORK_TIME);
-    } else if (activeMode === "short") {
-      setSecondsLeft(SHORT_BREAK);
-    } else if (activeMode === "long") {
-      setSecondsLeft(LONG_BREAK);
-    } else if (activeMode === "custom") {
-      if (isStop) {
-        setSecondsLeft(customTotalTime);
-      } else {
+    if (activeMode === "work") setSecondsLeft(WORK_TIME);
+    else if (activeMode === "short") setSecondsLeft(SHORT_BREAK);
+    else if (activeMode === "long") setSecondsLeft(LONG_BREAK);
+    else if (activeMode === "custom") {
+      if (isStop) setSecondsLeft(customTotalTime);
+      else {
         setCustomMinutes("");
         setCustomSeconds("");
         setCustomTotalTime(0);
@@ -246,6 +243,13 @@ const Timer = () => {
           <button onClick={resetTimer}>Reset</button>
         )}
       </div>
+
+      <button
+        className="mute-button"
+        onClick={() => setIsMuted((prev) => !prev)}
+      >
+        {isMuted ? "🔇 Muted" : "🔊 Sound On"}
+      </button>
 
       <audio ref={alarmRef} src="/alarm.mp3" />
       <div className="version-label">v1.4</div>
