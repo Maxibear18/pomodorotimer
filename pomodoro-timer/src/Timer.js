@@ -79,19 +79,33 @@ const Timer = () => {
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
+  const getStrokeColor = () => {
+    if (activeMode === "work") return "#ffb74d";
+    if (activeMode === "short") return "#42a5f5";
+    if (activeMode === "long") return "#66bb6a";
+    return "#f87171";
+  };
+
   return (
     <div
       className={`timer-container ${isRunning || isPaused ? "active-layout" : ""} ${
         (isRunning || isPaused) && activeMode === "work" ? "work-active" : ""
-      } ${(isRunning || isPaused) && activeMode === "short" ? "short-active" : ""}`}
+      } ${(isRunning || isPaused) && activeMode === "short" ? "short-active" : ""}
+        ${(isRunning || isPaused) && activeMode === "long" ? "long-active" : ""}`}
     >
       {!isRunning && !isPaused && <h1>🍅 Pomodoro Timer 🍅</h1>}
 
       {!isRunning && !isPaused && (
         <div className="mode-buttons">
-          <button onClick={() => switchMode("work")} className={activeMode === "work" ? "active" : ""}>Work</button>
-          <button onClick={() => switchMode("short")} className={activeMode === "short" ? "active" : ""}>Short Break</button>
-          <button onClick={() => switchMode("long")} className={activeMode === "long" ? "active" : ""}>Long Break</button>
+          <button onClick={() => switchMode("work")} className={activeMode === "work" ? "active" : ""}>
+            Work
+          </button>
+          <button onClick={() => switchMode("short")} className={activeMode === "short" ? "active" : ""}>
+            Short Break
+          </button>
+          <button onClick={() => switchMode("long")} className={activeMode === "long" ? "active" : ""}>
+            Long Break
+          </button>
         </div>
       )}
 
@@ -104,12 +118,7 @@ const Timer = () => {
             cx="140"
             cy="140"
             style={{
-              stroke:
-                activeMode === "work"
-                  ? "#ffb74d"
-                  : activeMode === "short"
-                  ? "#b3e5fc"
-                  : "#f87171",
+              stroke: getStrokeColor(),
               strokeDasharray: `${2 * Math.PI * 120}`,
               strokeDashoffset: `${2 * Math.PI * 120 * (1 - percentage / 100)}`
             }}
@@ -119,9 +128,7 @@ const Timer = () => {
       </div>
 
       <div className="control-buttons">
-        {!isRunning && !isPaused && (
-          <button onClick={startTimer}>Start</button>
-        )}
+        {!isRunning && !isPaused && <button onClick={startTimer}>Start</button>}
 
         {isRunning && !isPaused && (
           <>
@@ -139,7 +146,7 @@ const Timer = () => {
       </div>
 
       <audio ref={alarmRef} src="/alarm.mp3" />
-      <div className="version-label">v1.5</div>
+      <div className="version-label">v1.2</div>
     </div>
   );
 };

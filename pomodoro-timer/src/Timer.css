@@ -21,7 +21,11 @@
 }
 
 .timer-container.short-active {
-  background-color:  #b3e5fc;
+  background-color: #42a5f5;
+}
+
+.timer-container.long-active {
+  background-color: #66bb6a;
 }
 
 .mode-buttons {
@@ -69,7 +73,6 @@
 
 .ring-progress {
   fill: none;
-  stroke: #f87171;
   stroke-width: 14;
   transition: stroke-dashoffset 1s linear;
 }
