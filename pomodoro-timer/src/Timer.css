@@ -1,17 +1,25 @@
 .timer-container {
   text-align: center;
   font-family: Arial, sans-serif;
-  padding-top: 40px;
-  transition: all 0.3s ease;
-}
-
-.timer-container.running {
+  background-color: white;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
+  padding-top: 40px;
+  transition: background-color 1.5s ease-in-out;
+}
+
+/* Active timer layout overrides alignment for center effect */
+.timer-container.active-layout {
   justify-content: center;
-  height: 100vh;
   padding-top: 0;
+}
+
+/* Darker soft orange */
+.timer-container.work-active {
+  background-color: #ffb74d;
 }
 
 .mode-buttons {

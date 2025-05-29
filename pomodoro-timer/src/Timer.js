@@ -80,7 +80,11 @@ const Timer = () => {
   };
 
   return (
-    <div className={`timer-container ${isRunning || isPaused ? "running" : ""}`}>
+    <div
+      className={`timer-container ${isRunning || isPaused ? "active-layout" : ""} ${
+        (isRunning || isPaused) && activeMode === "work" ? "work-active" : ""
+      }`}
+    >
       {!isRunning && !isPaused && <h1>🍅 Pomodoro Timer 🍅</h1>}
 
       {!isRunning && !isPaused && (
@@ -95,14 +99,16 @@ const Timer = () => {
         <svg className="ring-svg" width="280" height="280">
           <circle className="ring-bg" r="120" cx="140" cy="140" />
           <circle
-            className="ring-progress"
-            r="120"
-            cx="140" cy="140"
-            style={{
-              strokeDasharray: `${2 * Math.PI * 120}`,
-              strokeDashoffset: `${2 * Math.PI * 120 * (1 - percentage / 100)}`
-            }}
-          />
+          className="ring-progress"
+          r="120"
+          cx="140"
+          cy="140"
+          style={{
+            stroke: activeMode === "work" ? "#ffb74d" : "#f87171",
+            strokeDasharray: `${2 * Math.PI * 120}`,
+            strokeDashoffset: `${2 * Math.PI * 120 * (1 - percentage / 100)}`
+          }}
+        />
         </svg>
         <h2 className="timer-display">{formatTime(secondsLeft)}</h2>
       </div>
@@ -128,7 +134,7 @@ const Timer = () => {
       </div>
 
       <audio ref={alarmRef} src="/alarm.mp3" />
-      <div className="version-label">v1.0</div>
+      <div className="version-label">v1.4</div>
     </div>
   );
 };
