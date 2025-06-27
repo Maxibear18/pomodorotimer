@@ -15,7 +15,8 @@ const Timer = () => {
   const [customMinutes, setCustomMinutes] = useState("");
   const [customSeconds, setCustomSeconds] = useState("");
   const [customTimeSet, setCustomTimeSet] = useState(false);
-  const [isMuted, setIsMuted] = useState(false); // ✅ NEW STATE
+  const [isMuted, setIsMuted] = useState(false);
+  const [endTime, setEndTime] = useState(null); // ✅ new state for real-time tracking
 
   const intervalRef = useRef(null);
   const alarmRef = useRef(null);
@@ -29,33 +30,38 @@ const Timer = () => {
       ? LONG_BREAK
       : customTotalTime || secondsLeft;
 
-  const percentage = totalTime > 0 ? ((totalTime - secondsLeft) / totalTime) * 100 : 0;
+  const percentage =
+    totalTime > 0 ? ((totalTime - secondsLeft) / totalTime) * 100 : 0;
 
   useEffect(() => {
     if (isRunning && !isPaused) {
       intervalRef.current = setInterval(() => {
-        setSecondsLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(intervalRef.current);
-            setIsRunning(false);
-            setIsFinished(true);
-           if (alarmRef.current && !isMuted) {
+        const now = Date.now();
+        const newSecondsLeft = Math.max(
+          Math.ceil((endTime - now) / 1000),
+          0
+        );
+
+        setSecondsLeft(newSecondsLeft);
+
+        if (newSecondsLeft <= 0) {
+          clearInterval(intervalRef.current);
+          setIsRunning(false);
+          setIsFinished(true);
+          if (alarmRef.current && !isMuted) {
+            alarmRef.current.currentTime = 0;
+            alarmRef.current.play();
+            setTimeout(() => {
+              alarmRef.current.pause();
               alarmRef.current.currentTime = 0;
-              alarmRef.current.play();
-              setTimeout(() => {
-                alarmRef.current.pause();
-                alarmRef.current.currentTime = 0;
-              }, 3000); 
-            } 
-            return 0;
+            }, 3000);
           }
-          return prev - 1;
-        });
+        }
       }, 1000);
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [isRunning, isPaused, isMuted]);
+  }, [isRunning, isPaused, endTime, isMuted]);
 
   useEffect(() => {
     let bubbleInterval;
@@ -84,15 +90,22 @@ const Timer = () => {
   }, [isRunning, isPaused]);
 
   const startTimer = () => {
+    let totalSecs;
+
     if (activeMode === "custom" && !customTimeSet) {
       const mins = parseInt(customMinutes) || 0;
       const secs = parseInt(customSeconds) || 0;
-      const totalSecs = mins * 60 + secs;
+      totalSecs = mins * 60 + secs;
       if (totalSecs <= 0) return;
       setSecondsLeft(totalSecs);
       setCustomTotalTime(totalSecs);
       setCustomTimeSet(true);
+    } else {
+      totalSecs = secondsLeft;
     }
+
+    const now = Date.now();
+    setEndTime(now + totalSecs * 1000);
     setIsRunning(true);
     setIsPaused(false);
     setIsFinished(false);
@@ -104,6 +117,8 @@ const Timer = () => {
   };
 
   const resumeTimer = () => {
+    const now = Date.now();
+    setEndTime(now + secondsLeft * 1000);
     setIsPaused(false);
   };
 
@@ -113,6 +128,7 @@ const Timer = () => {
     setIsFinished(false);
     clearInterval(intervalRef.current);
     resetSeconds(true);
+    setEndTime(null);
   };
 
   const resetTimer = () => {
@@ -125,6 +141,7 @@ const Timer = () => {
     setCustomTotalTime(0);
     clearInterval(intervalRef.current);
     resetSeconds(true);
+    setEndTime(null);
   };
 
   const resetSeconds = (isStop = false) => {
@@ -149,6 +166,8 @@ const Timer = () => {
     setIsFinished(false);
     setCustomTimeSet(false);
     setCustomTotalTime(0);
+    setEndTime(null);
+
     if (mode === "work") setSecondsLeft(WORK_TIME);
     else if (mode === "short") setSecondsLeft(SHORT_BREAK);
     else if (mode === "long") setSecondsLeft(LONG_BREAK);
@@ -158,7 +177,10 @@ const Timer = () => {
   const formatTime = (secs) => {
     const minutes = Math.floor(secs / 60);
     const seconds = secs % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   const getProgressColor = () => {
